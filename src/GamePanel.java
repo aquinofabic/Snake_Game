@@ -21,7 +21,9 @@ public class GamePanel extends JPanel implements ActionListener {
     int appleXCoordinate;
     int appleYCoordinate;
     char direction = 'R';  // snake begins facing right
-    boolean running = false;
+    boolean isRunning = false;
+    boolean isPaused = false;
+    boolean isRestart = false;
     Timer timer;
     Random random;
 
@@ -42,9 +44,21 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void startGame() {
         newApple();
-        running = true;
+        isRunning = true;
         timer = new Timer(delay, this);
-        timer.start();
+        timer.restart();
+        isPaused = false;
+    }
+
+    public void restartGame() {
+        if (!isRunning) {
+            startGame();
+            isRestart = true;
+            direction = 'R';
+            applesEaten = 0;
+            bodyParts = 6;
+        }
+
     }
 
     public void paintComponent(Graphics g) {
@@ -53,12 +67,10 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void draw(Graphics g) {
-        if (running) {
-            for (int i = 0; i < SCREEN_HEIGHT / UNIT_SIZE; i++) {
-                g.drawLine(i * UNIT_SIZE, 0, i * UNIT_SIZE, SCREEN_HEIGHT);  // vertical lines
-                g.drawLine(0, i * UNIT_SIZE, SCREEN_WIDTH, i * UNIT_SIZE);  // horizontal lines
-                // create a for loop to create more than one line
-            }
+        if (isPaused) {
+            pausedScreen(g);  // need to implement this to work, does not show paused screen grr.
+        }
+        if (isRunning || isRestart) {
             g.setColor(Color.red);
             g.fillOval(appleXCoordinate, appleYCoordinate, UNIT_SIZE, UNIT_SIZE);
 
@@ -67,7 +79,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 if (i == 0) {  // head
                     g.setColor(new Color(180, 180, 180));
                     g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
-                } else if (i % 2 == 0){
+                } else if (i % 2 == 0) {
                     g.setColor(new Color(120, 30, 30));
                     g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
                 } else {
@@ -76,7 +88,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 }
             }
             g.setColor(Color.red);
-            g.setFont(new Font("Ink Free", Font.BOLD, 40));
+            g.setFont(new Font("Helvetica Bold", Font.BOLD, 40));
             FontMetrics metrics = getFontMetrics(g.getFont());
             g.drawString("Score: " + applesEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: " + applesEaten)) / 2, g.getFont().getSize());
         } else gameOver(g);
@@ -93,6 +105,7 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void move() {
+
         // iterate all the body parts for the snake
         for (int i = bodyParts; i > 0; i--) {
             x[i] = x[i - 1];  // shifting all coordinates in the array by one
@@ -107,6 +120,7 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
+
     public void checkApple() {
         if ((x[0]) == appleXCoordinate && (y[0]) == appleYCoordinate) {
             bodyParts++;
@@ -119,45 +133,61 @@ public class GamePanel extends JPanel implements ActionListener {
         // check if head hits body, iterate through all body parts
         for (int i = bodyParts; i > 0; i--) {
             if ((x[0] == x[i]) && y[0] == y[i]) {
-                running = false;
+                isRunning = false;
             }
         }
         // check if head touches left border
         if (x[0] < 0) {
-            running = false;
+            isRunning = false;
         }
         // check if head touches right border
         if (x[0] > SCREEN_WIDTH) {
-            running = false;
+            isRunning = false;
         }
         // check if head touches top border
         if (y[0] < 0) {
-            running = false;
+            isRunning = false;
         }
         // check if head touches bottom border
         if (y[0] > SCREEN_HEIGHT) {
-            running = false;
+            isRunning = false;
         }
     }
 
     public void gameOver(Graphics g) {
         // GAME OVER TEXT
         g.setColor(Color.red);
-        g.setFont(new Font("Ink Free", Font.BOLD, 75));
+        g.setFont(new Font("Helvetica Bold", Font.BOLD, 75));
         FontMetrics metrics = getFontMetrics(g.getFont());
         // font metrics are useful for lining up text at the centre of the screen
-        g.drawString("Game Over", (SCREEN_WIDTH - metrics.stringWidth("Game Over"))/2, SCREEN_HEIGHT/2);
+        g.drawString("Game Over", (SCREEN_WIDTH - metrics.stringWidth("Game Over")) / 2, SCREEN_HEIGHT / 4);
         g.drawString("Score: " + applesEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: " + applesEaten)) / 2, g.getFont().getSize());
+        g.setFont(new Font("Helvetica Bold", Font.BOLD, 40));
+        metrics = getFontMetrics(g.getFont());
+        g.drawString("Press Enter to play again", (SCREEN_WIDTH - metrics.stringWidth("Press Enter to play again")) / 2, SCREEN_HEIGHT / 2);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (running) {
+        if (isRunning) {
             move();
             checkApple();
             checkCollisions();
         }
         repaint();
+    }
+
+    public void pauseGame() {
+        isPaused = true;
+        isRunning = false;
+        timer.stop();
+    }
+
+    public void pausedScreen(Graphics g) {
+        g.setColor(Color.red);
+        g.setFont(new Font("Helvetica Bold", Font.BOLD, 75));
+        FontMetrics metrics = getFontMetrics(g.getFont());
+        g.drawString("Paused", (SCREEN_WIDTH - metrics.stringWidth("Paused")) / 2, SCREEN_HEIGHT / 2);
     }
 
     public class MyKeyAdaptor extends KeyAdapter {
@@ -183,6 +213,16 @@ public class GamePanel extends JPanel implements ActionListener {
                     if (direction != 'U') {
                         direction = 'D';
                     }
+                }
+                case KeyEvent.VK_SPACE -> {
+                    if (!isPaused) {
+                        pauseGame();
+                    } else {
+                        startGame();
+                    }
+                }
+                case KeyEvent.VK_ENTER -> {
+                    restartGame();
                 }
             }
         }

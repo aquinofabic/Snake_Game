@@ -13,6 +13,6 @@ public class Program {
 TO DO:
 change body of snake so there's alternating green and other colour pattern
 make sure apple doesn't spawn on the same coordinate as the snake  DONE
-add pause option
+add pause option DONE-ISH
 add play again option
  */
