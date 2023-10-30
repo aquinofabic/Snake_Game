@@ -9,3 +9,10 @@ public class Program {
         new GameFrame();
     }
 }
+/*
+TO DO:
+change body of snake so there's alternating green and other colour pattern
+make sure apple doesn't spawn on the same coordinate as the snake  DONE
+add pause option
+add play again option
+ */

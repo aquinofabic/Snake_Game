@@ -9,9 +9,11 @@ import java.util.Random;
 public class GamePanel extends JPanel implements ActionListener {
     static final int SCREEN_WIDTH = 600;
     static final int SCREEN_HEIGHT = 600;
-    static final int UNIT_SIZE = 25;  // how big we want our objects in the game, unit or 'pixels' in the program
-    static final int GAME_UNITS = (SCREEN_WIDTH * SCREEN_HEIGHT) / UNIT_SIZE;
-    static final int delay = 75;  // create two arrays x,y to hold all coordinates for body and head of the snake
+    static final int UNIT_SIZE = 35;  // how big we want our objects in the game, unit or 'pixels' in the program
+    static final int GAME_UNITS = (SCREEN_WIDTH * SCREEN_HEIGHT) / UNIT_SIZE;  // 'pixels' of the program
+    static final int delay = 75;
+
+    // create two arrays x,y to hold all coordinates for body and head of the snake
     final int[] x = new int[GAME_UNITS];
     final int[] y = new int[GAME_UNITS];
     int bodyParts = 6;  // begins with 6 body parts
@@ -63,10 +65,13 @@ public class GamePanel extends JPanel implements ActionListener {
             // create a for loop to iterate the body parts of the snake
             for (int i = 0; i < bodyParts; i++) {
                 if (i == 0) {  // head
-                    g.setColor(new Color(0, 180, 0));
+                    g.setColor(new Color(180, 180, 180));
+                    g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+                } else if (i % 2 == 0){
+                    g.setColor(new Color(120, 30, 30));
                     g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
                 } else {
-                    g.setColor(new Color(0, 150, 0));
+                    g.setColor(new Color(180, 30, 30));
                     g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
                 }
             }
@@ -78,9 +83,13 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void newApple() {
-        // generate coordinates for a new apple whenever one is eaten or creating a new game
-        appleXCoordinate = random.nextInt(SCREEN_WIDTH / UNIT_SIZE) * UNIT_SIZE;
-        appleYCoordinate = random.nextInt(SCREEN_HEIGHT / UNIT_SIZE) * UNIT_SIZE;
+        for (int i = 0; i < bodyParts; i++) {
+            if (appleXCoordinate == x[i] && appleYCoordinate == y[i]) {  // makes sure apple doesn't spawn 'on top' of snake body
+                // generate coordinates for a new apple whenever one is eaten or creating a new game
+                appleXCoordinate = random.nextInt(SCREEN_WIDTH / UNIT_SIZE) * UNIT_SIZE;
+                appleYCoordinate = random.nextInt(SCREEN_HEIGHT / UNIT_SIZE) * UNIT_SIZE;
+            }
+        }
     }
 
     public void move() {
@@ -183,10 +192,4 @@ public class GamePanel extends JPanel implements ActionListener {
 /*
 JPanel is a part of the Java Swing package that can store a group of components
     represents some area in which controls (buttons,...) and visuals (pictures,...) can appear
-
-TO DO:
-change body of snake so there's alternating green and other colour pattern!!
-make sure apple doesnt spawn on the same coordinate as the snake!!
-change apple image?
-change snake head image?
  */
