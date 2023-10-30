@@ -58,7 +58,6 @@ public class GamePanel extends JPanel implements ActionListener {
             applesEaten = 0;
             bodyParts = 6;
         }
-
     }
 
     public void paintComponent(Graphics g) {
