@@ -69,7 +69,7 @@ public class GamePanel extends JPanel implements ActionListener {
         if (isPaused) {
             pausedScreen(g);  // need to implement this to work, does not show paused screen grr.
         }
-        else if (isRunning || isRestart) {
+        if (isRunning || isRestart) {
             g.setColor(Color.red);
             g.fillOval(appleXCoordinate, appleYCoordinate, UNIT_SIZE, UNIT_SIZE);
 
@@ -180,7 +180,6 @@ public class GamePanel extends JPanel implements ActionListener {
         isPaused = true;
         isRunning = false;
         timer.stop();
-        repaint();
     }
 
     public void pausedScreen(Graphics g) {
