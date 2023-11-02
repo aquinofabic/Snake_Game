@@ -69,7 +69,7 @@ public class GamePanel extends JPanel implements ActionListener {
         if (isPaused) {
             pausedScreen(g);  // need to implement this to work, does not show paused screen grr.
         }
-        else if ((isRunning || isRestart) && !isPaused) {
+        else if (isRunning || isRestart) {
             g.setColor(Color.red);
             g.fillOval(appleXCoordinate, appleYCoordinate, UNIT_SIZE, UNIT_SIZE);
 
@@ -104,19 +104,18 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void move() {
-        if (isRunning) {
-            // iterate all the body parts for the snake
-            for (int i = bodyParts; i > 0; i--) {
-                x[i] = x[i - 1];  // shifting all coordinates in the array by one
-                y[i] = y[i - 1];
-            }
-            // create a switch to change the direction which way the snake is going
-            switch (direction) {
-                case 'U' -> y[0] = y[0] - UNIT_SIZE;  // y[0] is the head of the snake, - UNIT_SIZE goes to next position
-                case 'D' -> y[0] = y[0] + UNIT_SIZE;
-                case 'L' -> x[0] = x[0] - UNIT_SIZE;
-                case 'R' -> x[0] = x[0] + UNIT_SIZE;
-            }
+
+        // iterate all the body parts for the snake
+        for (int i = bodyParts; i > 0; i--) {
+            x[i] = x[i - 1];  // shifting all coordinates in the array by one
+            y[i] = y[i - 1];
+        }
+        // create a switch to change the direction which way the snake is going
+        switch (direction) {
+            case 'U' -> y[0] = y[0] - UNIT_SIZE;  // y[0] is the head of the snake, - UNIT_SIZE goes to next position
+            case 'D' -> y[0] = y[0] + UNIT_SIZE;
+            case 'L' -> x[0] = x[0] - UNIT_SIZE;
+            case 'R' -> x[0] = x[0] + UNIT_SIZE;
         }
     }
 
@@ -153,18 +152,6 @@ public class GamePanel extends JPanel implements ActionListener {
             isRunning = false;
         }
     }
-    public void pauseGame() {
-        isPaused = true;
-        isRunning = false;
-        timer.stop();
-    }
-
-    public void pausedScreen(Graphics g) {
-        g.setColor(Color.red);
-        g.setFont(new Font("Helvetica Bold", Font.BOLD, 75));
-        FontMetrics metrics = getFontMetrics(g.getFont());
-        g.drawString("Paused", (SCREEN_WIDTH - metrics.stringWidth("Paused")) / 2, SCREEN_HEIGHT / 2);
-    }
 
     public void gameOver(Graphics g) {
         // GAME OVER TEXT
@@ -187,6 +174,20 @@ public class GamePanel extends JPanel implements ActionListener {
             checkCollisions();
         }
         repaint();
+    }
+
+    public void pauseGame() {
+        isPaused = true;
+        isRunning = false;
+        timer.stop();
+        repaint();
+    }
+
+    public void pausedScreen(Graphics g) {
+        g.setColor(Color.red);
+        g.setFont(new Font("Helvetica Bold", Font.BOLD, 75));
+        FontMetrics metrics = getFontMetrics(g.getFont());
+        g.drawString("Paused", (SCREEN_WIDTH - metrics.stringWidth("Paused")) / 2, SCREEN_HEIGHT / 2);
     }
 
     public class MyKeyAdaptor extends KeyAdapter {
