@@ -51,12 +51,13 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void restartGame() {
-        if (!isRunning) {
+        if (!isRunning && !isPaused) {
             startGame();
             isRestart = true;
             direction = 'R';
             applesEaten = 0;
             bodyParts = 6;
+            repaint();
         }
     }
 
@@ -66,9 +67,6 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void draw(Graphics g) {
-        if (isPaused) {
-            pausedScreen(g);  // need to implement this to work, does not show paused screen grr.
-        }
         if (isRunning || isRestart) {
             g.setColor(Color.red);
             g.fillOval(appleXCoordinate, appleYCoordinate, UNIT_SIZE, UNIT_SIZE);
@@ -90,7 +88,11 @@ public class GamePanel extends JPanel implements ActionListener {
             g.setFont(new Font("Helvetica Bold", Font.BOLD, 40));
             FontMetrics metrics = getFontMetrics(g.getFont());
             g.drawString("Score: " + applesEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: " + applesEaten)) / 2, g.getFont().getSize());
-        } else gameOver(g);
+        }
+        else if (isPaused) {
+            pausedScreen(g);
+        }
+        else gameOver(g);
     }
 
     public void newApple() {
@@ -180,6 +182,7 @@ public class GamePanel extends JPanel implements ActionListener {
         isPaused = true;
         isRunning = false;
         timer.stop();
+        repaint();
     }
 
     public void pausedScreen(Graphics g) {
